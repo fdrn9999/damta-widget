@@ -1,0 +1,156 @@
+import { useState, useRef, useCallback, useEffect } from "react";
+
+export type TimerMode = "pomodoro" | "free" | "infinite";
+export type TimerState = "idle" | "running" | "paused" | "break" | "longBreak";
+
+interface TimerConfig {
+  workMinutes: number;
+  breakMinutes: number;
+  longBreakMinutes: number;
+  mode: TimerMode;
+  onSessionComplete?: () => void;
+  onBreakComplete?: () => void;
+}
+
+export function useTimer(config: TimerConfig) {
+  const [state, setState] = useState<TimerState>("idle");
+  const [remainingSeconds, setRemainingSeconds] = useState(config.workMinutes * 60);
+  const [totalSeconds, setTotalSeconds] = useState(config.workMinutes * 60);
+  const [sessionCount, setSessionCount] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const intervalRef = useRef<number | null>(null);
+  const stateRef = useRef<TimerState>(state);
+  const configRef = useRef(config);
+
+  // Keep refs in sync
+  stateRef.current = state;
+  configRef.current = config;
+
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const progress = totalSeconds > 0 ? 1 - remainingSeconds / totalSeconds : 0;
+
+  const startBreak = useCallback((isLong: boolean) => {
+    clearTimer();
+    const secs = (isLong ? configRef.current.longBreakMinutes : configRef.current.breakMinutes) * 60;
+    setRemainingSeconds(secs);
+    setTotalSeconds(secs);
+    setState(isLong ? "longBreak" : "break");
+  }, [clearTimer]);
+
+  const start = useCallback(() => {
+    const currentState = stateRef.current;
+    if (currentState === "idle") {
+      const secs = configRef.current.mode === "infinite" ? 3600 : configRef.current.workMinutes * 60;
+      setRemainingSeconds(secs);
+      setTotalSeconds(secs);
+      setState("running");
+    } else if (currentState === "paused") {
+      setState("running");
+    }
+  }, []);
+
+  const pause = useCallback(() => {
+    if (stateRef.current === "running") {
+      setState("paused");
+      clearTimer();
+    }
+  }, [clearTimer]);
+
+  const toggle = useCallback(() => {
+    if (stateRef.current === "running") pause();
+    else start();
+  }, [start, pause]);
+
+  const reset = useCallback(() => {
+    clearTimer();
+    const secs = configRef.current.mode === "infinite" ? 3600 : configRef.current.workMinutes * 60;
+    setRemainingSeconds(secs);
+    setTotalSeconds(secs);
+    setState("idle");
+    setStreak(0);
+  }, [clearTimer]);
+
+  // Main timer effect - only depends on state
+  useEffect(() => {
+    if (state !== "running" && state !== "break" && state !== "longBreak") {
+      return;
+    }
+
+    intervalRef.current = window.setInterval(() => {
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          clearTimer();
+          const currentState = stateRef.current;
+          const cfg = configRef.current;
+
+          if (currentState === "running") {
+            setSessionCount(c => c + 1);
+            setStreak(s => s + 1);
+            cfg.onSessionComplete?.();
+
+            if (cfg.mode === "pomodoro") {
+              // Check session count for long break
+              setSessionCount(prevCount => {
+                const isLong = prevCount % 4 === 0;
+                setTimeout(() => startBreak(isLong), 500);
+                return prevCount;
+              });
+            } else if (cfg.mode === "infinite") {
+              // Restart infinite timer
+              setTotalSeconds(3600);
+              return 3600;
+            } else {
+              // Free mode - go idle
+              setState("idle");
+            }
+          } else {
+            // Break completed
+            cfg.onBreakComplete?.();
+            setState("idle");
+            const secs = cfg.workMinutes * 60;
+            setTotalSeconds(secs);
+            return secs;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return clearTimer;
+  }, [state, clearTimer, startBreak]);
+
+  // Update when config changes while idle
+  useEffect(() => {
+    if (state === "idle") {
+      const secs = config.mode === "infinite" ? 3600 : config.workMinutes * 60;
+      setRemainingSeconds(secs);
+      setTotalSeconds(secs);
+    }
+  }, [config.workMinutes, config.mode, state]);
+
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds % 60;
+  const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  return {
+    state,
+    progress,
+    remainingSeconds,
+    totalSeconds,
+    display,
+    sessionCount,
+    streak,
+    start,
+    pause,
+    toggle,
+    reset,
+    startBreak,
+  };
+}

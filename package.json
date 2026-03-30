@@ -1,0 +1,35 @@
+{
+  "name": "damta-widget",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "author": "정진호 <ckato9173@gmail.com>",
+  "homepage": "https://github.com/fdrn9999/damta-widget",
+  "repository": "https://github.com/fdrn9999/damta-widget",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-global-shortcut": "^2",
+    "@tauri-apps/plugin-notification": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-store": "^2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.4",
+    "@tauri-apps/cli": "^2",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "^4.1.4",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3"
+  }
+}

@@ -1,0 +1,176 @@
+/* Smoke rise animation */
+@keyframes smokeRise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-200px) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Ember pulse */
+@keyframes emberPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Ash explode on flick */
+@keyframes ashExplode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(var(--s));
+  }
+}
+
+/* Smoke particle */
+.smoke-particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(12px);
+  animation: smokeRise 6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* Ember glow */
+.ember-glow {
+  animation: emberPulse 0.5s infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.8))
+          drop-shadow(0 0 12px rgba(255, 50, 0, 0.6));
+}
+
+.ember-glow.paused {
+  animation: none;
+  opacity: 0.4;
+  filter: drop-shadow(0 0 2px rgba(255, 100, 0, 0.3));
+}
+
+/* Ash particle for flick effect */
+.ash-particle {
+  position: absolute;
+  background: linear-gradient(135deg, #666, #888);
+  border-radius: 2px;
+  animation: ashExplode 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  pointer-events: none;
+}
+
+/* Paper texture */
+.paper-texture {
+  position: relative;
+  background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+}
+
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.02) 2px,
+    rgba(0, 0, 0, 0.02) 4px
+  );
+  pointer-events: none;
+}
+
+/* Filter texture */
+.filter-texture {
+  position: relative;
+  background: linear-gradient(to bottom, #e8a862, #dda15e, #d4a574);
+  cursor: grab;
+}
+
+.filter-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 140, 0, 0.15) 1px,
+    rgba(255, 140, 0, 0.15) 2px
+  );
+  pointer-events: none;
+}
+
+.filter-texture::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(200, 120, 50, 0.6);
+}
+
+/* Ash gradient */
+.ash-gradient {
+  background: linear-gradient(to bottom, #1f2937, #4b5563, #9ca3af);
+}
+
+/* Memo panel slide */
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+}
+
+.memo-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.memo-slide-out {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Cigarette light up animation */
+@keyframes lightUp {
+  0% {
+    filter: grayscale(100%) brightness(0.7);
+  }
+  50% {
+    filter: grayscale(0%) brightness(1.2);
+  }
+  100% {
+    filter: grayscale(0%) brightness(1);
+  }
+}
+
+.light-up {
+  animation: lightUp 0.8s ease-out forwards;
+}
+
+/* Unlit cigarette */
+.cigarette-unlit {
+  filter: grayscale(60%) brightness(0.8);
+}
