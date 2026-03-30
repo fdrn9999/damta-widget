@@ -1,11 +1,11 @@
 {
-  "name": "damta-widget",
+  "name": "ssudam-widget",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "author": "정진호 <ckato9173@gmail.com>",
-  "homepage": "https://github.com/fdrn9999/damta-widget",
-  "repository": "https://github.com/fdrn9999/damta-widget",
+  "homepage": "https://github.com/fdrn9999/ssudam-widget",
+  "repository": "https://github.com/fdrn9999/ssudam-widget",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

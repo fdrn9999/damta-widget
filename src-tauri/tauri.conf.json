@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "담타 위젯",
+  "productName": "쓰담 위젯",
   "version": "1.0.0",
-  "identifier": "com.fdrn9999.damta-widget",
+  "identifier": "com.fdrn9999.ssudam-widget",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "담타 위젯",
+        "title": "쓰담 위젯",
         "width": 200,
         "height": 500,
         "resizable": false,

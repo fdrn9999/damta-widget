@@ -1,26 +1,44 @@
 import { useState, useEffect } from "react";
-import { loadSettings, saveSettings, AppSettings, defaultSettings } from "../stores/settingsStore";
+import { AppSettings } from "../stores/settingsStore";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { enable, disable, isEnabled } from "@tauri-apps/plugin-autostart";
 
-export function Settings() {
-  const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+interface SettingsProps {
+  onClose?: () => void;
+  settings?: AppSettings;
+  onUpdate?: (updates: Partial<AppSettings>) => void;
+}
+
+export function Settings({ onClose, settings: propSettings, onUpdate }: SettingsProps) {
+  const [draft, setDraft] = useState<AppSettings | null>(null);
   const [autoStartEnabled, setAutoStartEnabled] = useState(false);
   const [activeTab, setActiveTab] = useState<"timer" | "look" | "system">("timer");
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    loadSettings().then(setSettings);
+    if (propSettings) setDraft({ ...propSettings });
     isEnabled().then(setAutoStartEnabled).catch(() => {});
-  }, []);
+  }, []); // eslint-disable-line
 
-  useEffect(() => {
-    getCurrentWindow().setAlwaysOnTop(settings.alwaysOnTop).catch(() => {});
-  }, [settings.alwaysOnTop]);
+  if (!draft || !propSettings) return null;
+  const settings = draft;
 
-  const update = async (updates: Partial<AppSettings>) => {
-    const newSettings = { ...settings, ...updates };
-    setSettings(newSettings);
-    await saveSettings(newSettings);
+  const update = (updates: Partial<AppSettings>) => {
+    setDraft(prev => prev ? { ...prev, ...updates } : prev);
+    setHasChanges(true);
+  };
+
+  const applySettings = () => {
+    onUpdate?.(draft);
+    if (draft.alwaysOnTop !== propSettings.alwaysOnTop) {
+      getCurrentWindow().setAlwaysOnTop(draft.alwaysOnTop).catch(() => {});
+    }
+    setHasChanges(false);
+  };
+
+  const resetSettings = () => {
+    setDraft({ ...propSettings });
+    setHasChanges(false);
   };
 
   const tabs = [
@@ -42,10 +60,10 @@ export function Settings() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-base font-bold text-gray-100 tracking-wide">설정</h1>
-            <p className="text-[10px] text-amber-700 mt-0.5 tracking-widest uppercase">DAMTA WIDGET PREFERENCES</p>
+            <p className="text-[10px] text-amber-700 mt-0.5 tracking-widest uppercase">SSUDAM WIDGET PREFERENCES</p>
           </div>
           <button
-            onClick={() => getCurrentWindow().close()}
+            onClick={() => onClose ? onClose() : getCurrentWindow().close()}
             className="w-7 h-7 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all"
           >
             ✕
@@ -102,24 +120,27 @@ export function Settings() {
               </div>
             </div>
 
-            {/* Time sliders */}
+            {/* Time sliders — 모드에 따라 비활성화 */}
             <SliderField
               label="작업 시간"
               value={settings.workMinutes}
               min={5} max={120} unit="분"
               onChange={v => update({ workMinutes: v })}
+              disabled={settings.timerMode === "infinite"}
             />
             <SliderField
               label="휴식 시간"
               value={settings.breakMinutes}
               min={1} max={30} unit="분"
               onChange={v => update({ breakMinutes: v })}
+              disabled={settings.timerMode !== "pomodoro"}
             />
             <SliderField
               label="긴 휴식"
               value={settings.longBreakMinutes}
               min={5} max={60} unit="분"
               onChange={v => update({ longBreakMinutes: v })}
+              disabled={settings.timerMode !== "pomodoro"}
             />
           </div>
         )}
@@ -233,13 +254,35 @@ export function Settings() {
 
             <div className="border-t border-gray-800 my-4" />
 
-            {/* Version info */}
-            <div className="text-center py-4">
-              <p className="text-[10px] text-gray-600">담타 위젯 v1.0.0</p>
-              <p className="text-[9px] text-gray-700 mt-1">Made by 정진호</p>
+            {/* Version & Credits */}
+            <div className="text-center py-4 space-y-1">
+              <p className="text-[10px] text-gray-600">쓰담 위젯 v1.0.0</p>
+              <p className="text-[9px] text-gray-700">Made by 정진호 (Jinho Chung)</p>
+              <p className="text-[9px] text-gray-700">& 박찬진 (Chanjin Park)</p>
             </div>
           </div>
         )}
+      </div>
+
+      {/* 적용/취소 버튼 바 */}
+      <div className="px-5 py-3 flex items-center justify-end gap-2" style={{ borderTop: "1px solid rgba(232,168,98,0.15)", background: "#141414" }}>
+        <button
+          onClick={() => { resetSettings(); onClose?.(); }}
+          className="px-4 py-1.5 text-xs text-gray-400 hover:text-gray-200 rounded transition-all"
+        >
+          취소
+        </button>
+        <button
+          onClick={applySettings}
+          disabled={!hasChanges}
+          className={`px-4 py-1.5 text-xs rounded transition-all ${
+            hasChanges
+              ? "bg-amber-600 text-white hover:bg-amber-500"
+              : "bg-gray-800 text-gray-600 cursor-not-allowed"
+          }`}
+        >
+          적용
+        </button>
       </div>
     </div>
   );
@@ -247,16 +290,17 @@ export function Settings() {
 
 /* ── Reusable sub-components ────────────────────── */
 
-function SliderField({ label, value, min, max, unit, onChange }: {
+function SliderField({ label, value, min, max, unit, onChange, disabled }: {
   label: string;
   value: number;
   min: number;
   max: number;
   unit: string;
   onChange: (v: number) => void;
+  disabled?: boolean;
 }) {
   return (
-    <div>
+    <div className={disabled ? "opacity-35 pointer-events-none" : ""}>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</span>
         <span className="text-xs text-amber-400 font-mono">{value}{unit}</span>
@@ -266,6 +310,7 @@ function SliderField({ label, value, min, max, unit, onChange }: {
         min={min}
         max={max}
         value={value}
+        disabled={disabled}
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-1 rounded-full appearance-none cursor-pointer"
         style={{

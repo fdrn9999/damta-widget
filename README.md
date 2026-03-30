@@ -6,8 +6,8 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
 </p>
 
-<h1 align="center">🚬 담타 위젯</h1>
-<p align="center"><b>당신의 바탕화면 위 작은 흡연실</b></p>
+<h1 align="center">🚬 쓰담 위젯</h1>
+<p align="center"><b>쓰고, 담배를 피우다</b></p>
 <p align="center">
   담배가 천천히 타들어가는 인터랙티브 시뮬레이션으로<br/>
   뽀모도로 타이머를 시각화하는 데스크톱 위젯
@@ -16,7 +16,7 @@
 <!-- 스크린샷 placeholder -->
 <!--
 <p align="center">
-  <img src="docs/screenshot.png" alt="담타 위젯 스크린샷" width="600" />
+  <img src="docs/screenshot.png" alt="쓰담 위젯 스크린샷" width="600" />
 </p>
 -->
 
@@ -93,7 +93,7 @@
 ➖ 숨기기
 ✕ 종료
 ─────────────
-담타 위젯 v1.0.0
+쓰담 위젯 v1.0.0
 ```
 
 ### 🛡 데스크톱 앱 기능
@@ -107,7 +107,7 @@
 
 ### Windows
 
-1. [Releases](https://github.com/fdrn9999/damta-widget/releases)에서 `담타위젯_1.0.0_x64_ko-KR.msi` 다운로드
+1. [Releases](https://github.com/fdrn9999/ssudam-widget/releases)에서 `쓰담위젯_1.0.0_x64_ko-KR.msi` 다운로드
 2. MSI 파일 실행 → 설치 마법사 따라 진행 (한국어 UI)
 3. 시작 메뉴 또는 바탕화면 바로가기로 실행
 4. **업데이트**: 새 MSI를 다운받아 다시 설치하면 기존 버전이 자동 교체됩니다
@@ -115,9 +115,9 @@
 
 ### macOS
 
-1. [Releases](https://github.com/fdrn9999/damta-widget/releases)에서 DMG 파일 다운로드
-   - Apple Silicon: `담타위젯_1.0.0_aarch64.dmg`
-   - Intel: `담타위젯_1.0.0_x64.dmg`
+1. [Releases](https://github.com/fdrn9999/ssudam-widget/releases)에서 DMG 파일 다운로드
+   - Apple Silicon: `쓰담위젯_1.0.0_aarch64.dmg`
+   - Intel: `쓰담위젯_1.0.0_x64.dmg`
 2. DMG 열기 → Applications 폴더로 드래그 앤 드롭
 3. 최소 지원: macOS 10.15 Catalina
 
@@ -148,8 +148,8 @@ npm run tauri build
 ```
 
 빌드 결과물:
-- **Windows**: `src-tauri/target/release/bundle/msi/담타 위젯_1.0.0_x64_ko-KR.msi`
-- **macOS**: `src-tauri/target/release/bundle/dmg/담타위젯_1.0.0_*.dmg`
+- **Windows**: `src-tauri/target/release/bundle/msi/쓰담 위젯_1.0.0_x64_ko-KR.msi`
+- **macOS**: `src-tauri/target/release/bundle/dmg/쓰담위젯_1.0.0_*.dmg`
 
 ---
 
@@ -188,7 +188,7 @@ npm run tauri build
 ## 프로젝트 구조
 
 ```
-damta-widget/
+ssudam-widget/
 ├── .github/workflows/build.yml    # CI/CD (Windows MSI + macOS DMG)
 ├── src-tauri/
 │   ├── src/

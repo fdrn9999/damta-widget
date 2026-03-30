@@ -50,7 +50,7 @@ let store: Store | null = null;
 
 async function getStore(): Promise<Store> {
   if (!store) {
-    store = await Store.load("damta-settings.json");
+    store = await Store.load("ssudam-settings.json");
   }
   return store;
 }

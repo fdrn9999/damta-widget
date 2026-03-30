@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { loadDailyStats, loadWeeklyStats, DailyStats } from "../stores/settingsStore";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-export function Stats() {
+export function Stats({ onClose }: { onClose?: () => void; embedded?: boolean }) {
   const [today, setToday] = useState<DailyStats | null>(null);
   const [weekly, setWeekly] = useState<DailyStats[]>([]);
 
@@ -19,7 +19,7 @@ export function Stats() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold">📊 오늘의 통계</h1>
         <button
-          onClick={() => getCurrentWindow().close()}
+          onClick={() => onClose ? onClose() : getCurrentWindow().close()}
           className="text-gray-500 hover:text-gray-300"
         >
           ✕

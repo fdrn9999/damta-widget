@@ -212,11 +212,18 @@
   pointer-events: none;
 }
 
-/* Rich text editor list styling */
-[contenteditable] ul, [contenteditable] ol {
-  padding-left: 18px;
+/* Rich text editor list styling — Tailwind 리셋 오버라이드 */
+[contenteditable] ul {
+  padding-left: 20px;
   margin: 4px 0;
+  list-style-type: disc !important;
+}
+[contenteditable] ol {
+  padding-left: 20px;
+  margin: 4px 0;
+  list-style-type: decimal !important;
 }
 [contenteditable] li {
   margin: 2px 0;
+  display: list-item !important;
 }

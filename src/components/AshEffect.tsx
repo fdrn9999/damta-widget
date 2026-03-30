@@ -19,26 +19,32 @@ export function useAshEffect() {
 
   const triggerFlick = useCallback((ashHeight: number) => {
     const newParticles: AshParticle[] = [];
-    const count = 20 + Math.floor(Math.random() * 10);
+    const count = 25 + Math.floor(Math.random() * 12);
+    const maxDelay = Math.min(ashHeight / 40, 1.2); // 재가 길수록 순차 딜레이 길게
+
     for (let i = 0; i < count; i++) {
-      const gray = 90 + Math.floor(Math.random() * 90);
-      // 파편이 재 영역 전체에서 떨어짐
+      const gray = 80 + Math.floor(Math.random() * 100);
+      // 재 높이 안에서 위치 — 위쪽이 먼저 떨어짐 (y가 작을수록 delay 작음)
+      const yPos = Math.random() * Math.min(ashHeight, 80);
+      const yRatio = yPos / Math.max(ashHeight, 1); // 0(위) ~ 1(아래)
+
       newParticles.push({
         id: Date.now() + i,
-        tx: (Math.random() - 0.5) * 140,           // 좌우 넓게 흩어짐
-        ty: 40 + Math.random() * 150,                // 아래로 떨어짐 (중력)
-        r: (Math.random() - 0.5) * 1080,             // 빠르게 회전
-        s: 0.1 + Math.random() * 0.3,
-        width: 2 + Math.random() * 5,
-        height: 1 + Math.random() * 3,               // 납작한 재 조각
-        x: 2 + Math.random() * 52,                   // 담배 너비 안에서
-        y: Math.random() * Math.min(ashHeight, 60),   // 재 높이 범위 안에서
-        color: `rgb(${gray}, ${gray - 15}, ${gray - 25})`,
-        delay: Math.random() * 0.2,
+        tx: (Math.random() - 0.5) * 120,
+        ty: 30 + Math.random() * 140,
+        r: (Math.random() - 0.5) * 900,
+        s: 0.1 + Math.random() * 0.4,
+        width: 2 + Math.random() * 6,
+        height: 1 + Math.random() * 3,
+        x: 2 + Math.random() * 52,
+        y: yPos,
+        color: `rgb(${gray}, ${gray - 10}, ${gray - 20})`,
+        // 위쪽(yRatio≈0)부터 떨어지고, 아래쪽은 늦게 → 풀풀 캐스케이드
+        delay: yRatio * maxDelay + Math.random() * 0.15,
       });
     }
     setParticles(newParticles);
-    setTimeout(() => setParticles([]), 2000);
+    setTimeout(() => setParticles([]), 2500);
   }, []);
 
   return { particles, triggerFlick };

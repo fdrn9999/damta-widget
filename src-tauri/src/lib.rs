@@ -10,17 +10,19 @@ use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 #[tauri::command]
 fn open_window(app: AppHandle, label: &str, title: &str, width: f64, height: f64) {
     if let Some(window) = app.get_webview_window(label) {
-        let _ = window.show();
-        let _ = window.set_focus();
-        return;
+        let _ = window.destroy();
     }
-    let url = WebviewUrl::App(format!("index.html?window={}", label).into());
+
+    // 단일 index.html + query param으로 라우팅
+    let url = WebviewUrl::App("index.html".into());
+
     let _ = WebviewWindowBuilder::new(&app, label, url)
         .title(title)
         .inner_size(width, height)
         .resizable(false)
         .decorations(true)
         .center()
+        .focused(true)
         .build();
 }
 
@@ -56,7 +58,7 @@ fn build_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let about = MenuItemBuilder::with_id("about", "ℹ️ 정보").build(app)?;
     let hide = MenuItemBuilder::with_id("hide", "➖ 숨기기").build(app)?;
     let quit = MenuItemBuilder::with_id("quit", "✕ 종료").build(app)?;
-    let version = MenuItemBuilder::with_id("version", "담타 위젯 v1.0.0")
+    let version = MenuItemBuilder::with_id("version", "쓰담 위젯 v1.0.0")
         .enabled(false)
         .build(app)?;
     let sep = PredefinedMenuItem::separator(app)?;
@@ -83,7 +85,7 @@ fn build_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let _tray = TrayIconBuilder::new()
         .icon(icon)
         .menu(&menu)
-        .tooltip("담타 위젯")
+        .tooltip("쓰담 위젯")
         .on_menu_event(move |app, event| {
             let id = event.id().as_ref();
             match id {
@@ -91,13 +93,13 @@ fn build_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                     let _ = app.emit("tray-event", id);
                 }
                 "settings" => {
-                    open_window(app.clone(), "settings", "설정", 400.0, 500.0);
+                    let _ = app.emit("tray-event", "open-settings");
                 }
                 "stats" => {
-                    open_window(app.clone(), "stats", "오늘의 통계", 380.0, 420.0);
+                    let _ = app.emit("tray-event", "open-stats");
                 }
                 "about" => {
-                    open_window(app.clone(), "about", "정보", 380.0, 420.0);
+                    let _ = app.emit("tray-event", "open-about");
                 }
                 "hide" => {
                     if let Some(w) = app.get_webview_window("main") {
@@ -190,5 +192,5 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("담타 위젯 실행 오류");
+        .expect("쓰담 위젯 실행 오류");
 }
