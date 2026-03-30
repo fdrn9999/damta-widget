@@ -21,7 +21,7 @@ jobs:
           name: windows-msi
           path: src-tauri/target/release/bundle/msi/*.msi
 
-  build-macos:
+  build-macos-arm:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,16 +30,33 @@ jobs:
           node-version: 20
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+          targets: aarch64-apple-darwin
       - run: npm ci
-      - run: npm run tauri build -- --target universal-apple-darwin
+      - run: npm run tauri build -- --target aarch64-apple-darwin
       - uses: actions/upload-artifact@v4
         with:
-          name: macos-dmg
-          path: src-tauri/target/release/bundle/dmg/*.dmg
+          name: macos-dmg-arm
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+
+  build-macos-intel:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+      - run: npm ci
+      - run: npm run tauri build -- --target x86_64-apple-darwin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg-intel
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
 
   release:
-    needs: [build-windows, build-macos]
+    needs: [build-windows, build-macos-arm, build-macos-intel]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,12 +66,25 @@ jobs:
         with:
           files: |
             windows-msi/*.msi
-            macos-dmg/*.dmg
+            macos-dmg-arm/*.dmg
+            macos-dmg-intel/*.dmg
           body: |
-            ## 🚬 쓰담 위젯
+            ## 🚬 쓰담 위젯 — 쓰고, 담배를 피우다
+
             ### 다운로드
-            - **Windows**: 쓰담위젯_x.x.x_x64.msi 다운로드 후 실행
-            - **macOS**: 쓰담위젯_x.x.x_aarch64.dmg (Apple Silicon) 또는 _x64.dmg (Intel)
+            | 플랫폼 | 파일 |
+            |--------|------|
+            | **Windows** | `.msi` 다운로드 후 실행 |
+            | **macOS (Apple Silicon)** | `_aarch64.dmg` 다운로드 |
+            | **macOS (Intel)** | `_x64.dmg` 다운로드 |
+
+            ### 주요 기능
+            - 🚬 리얼 담배 시뮬레이션 (재/불씨/종이/필터/연기)
+            - ⏱ 뽀모도로 타이머 (담배가 타는 것 = 시간 흐름)
+            - 💨 필터 홀드로 깊게 흡입 (3배속 연소)
+            - 📝 리치 텍스트 메모 (볼드/이탤릭/밑줄)
+            - ⚙️ 커스터마이징 (스킨, 연기, 투명도)
+
             ### 제작
-            정진호 (ckato9173@gmail.com)
+            정진호 & 박찬진
             Inspired by [온라인 담타](https://www.damta.world/)
