@@ -341,12 +341,12 @@ function ToggleField({ label, description, value, onChange }: {
   label: string;
   description?: string;
   value: boolean;
-  onChange: (v: boolean) => void;
+  onChange: (v: boolean) => void | Promise<void>;
 }) {
   return (
     <div
       className="flex items-center justify-between py-1 cursor-pointer group"
-      onClick={() => onChange(!value)}
+      onClick={() => { onChange(!value); }}
     >
       <div>
         <div className="text-xs text-gray-300 group-hover:text-gray-200 transition-colors">{label}</div>

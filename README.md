@@ -232,12 +232,12 @@ damta-widget/
 
 ## License
 
-[MIT License](LICENSE) — Copyright (c) 2025 Jinho Jeong
+[MIT License](LICENSE) — Copyright (c) 2025 Jinho Chung
 
 ---
 
 ## 제작자
 
-**정진호 (Jinho Jeong)** — [github.com/fdrn9999](https://github.com/fdrn9999) · [ckato9173@gmail.com](mailto:ckato9173@gmail.com)
+**정진호 (Jinho Chung)** — [github.com/fdrn9999](https://github.com/fdrn9999) · [ckato9173@gmail.com](mailto:ckato9173@gmail.com)
 
 **박찬진 (Chanjin Park)** — [github.com/chanjin346](https://github.com/chanjin346)

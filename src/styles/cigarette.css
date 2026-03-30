@@ -204,3 +204,19 @@
   animation: timerBurn 0.3s ease-in-out infinite;
   text-shadow: 0 0 8px rgba(255, 140, 0, 0.6), 0 0 16px rgba(255, 80, 0, 0.3);
 }
+
+/* Rich text editor placeholder */
+[contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: #555;
+  pointer-events: none;
+}
+
+/* Rich text editor list styling */
+[contenteditable] ul, [contenteditable] ol {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+[contenteditable] li {
+  margin: 2px 0;
+}
