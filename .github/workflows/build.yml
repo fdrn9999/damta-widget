@@ -21,8 +21,15 @@ jobs:
           name: windows-msi
           path: src-tauri/target/release/bundle/msi/*.msi
 
-  build-macos-arm:
+  build-macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            artifact: macos-dmg-arm
+          - target: x86_64-apple-darwin
+            artifact: macos-dmg-intel
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,33 +37,16 @@ jobs:
           node-version: 20
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin
+          targets: ${{ matrix.target }}
       - run: npm ci
-      - run: npm run tauri build -- --target aarch64-apple-darwin
+      - run: npm run tauri build -- --target ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         with:
-          name: macos-dmg-arm
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
-
-  build-macos-intel:
-    runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin
-      - run: npm ci
-      - run: npm run tauri build -- --target x86_64-apple-darwin
-      - uses: actions/upload-artifact@v4
-        with:
-          name: macos-dmg-intel
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+          name: ${{ matrix.artifact }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
 
   release:
-    needs: [build-windows, build-macos-arm, build-macos-intel]
+    needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write
